@@ -1,0 +1,62 @@
+<UserControl x:Class="AquaVectorUI.views.LaunchControlPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <!-- Attitude -->
+        <Border Style="{StaticResource PanelBorder}" Padding="0,4,0,8">
+            <StackPanel>
+                <TextBlock Text="▸ 발사관 자세 제어" Style="{StaticResource SectionTitle}"/>
+
+                <TextBlock Text="방위각 (Azimuth)" Style="{StaticResource FieldLabel}" Margin="8,4,8,2"/>
+                <Grid Margin="8,0,8,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="46"/>
+                    </Grid.ColumnDefinitions>
+                    <Slider Grid.Column="0" Minimum="0" Maximum="360"
+                            Value="{Binding AzimuthDeg, Mode=TwoWay}"
+                            VerticalAlignment="Center" Foreground="#c5a61b"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding AzimuthDeg, StringFormat='{}{0:F1}°'}"
+                               Foreground="#c5a61b" FontFamily="Consolas" FontSize="10"
+                               VerticalAlignment="Center" Margin="4,0,0,0"/>
+                </Grid>
+
+                <TextBlock Text="고각 (Elevation)" Style="{StaticResource FieldLabel}" Margin="8,2,8,2"/>
+                <Grid Margin="8,0,8,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="46"/>
+                    </Grid.ColumnDefinitions>
+                    <Slider Grid.Column="0" Minimum="-30" Maximum="30"
+                            Value="{Binding ElevationDeg, Mode=TwoWay}"
+                            VerticalAlignment="Center" Foreground="#c5a61b"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding ElevationDeg, StringFormat='{}{0:F1}°'}"
+                               Foreground="#c5a61b" FontFamily="Consolas" FontSize="10"
+                               VerticalAlignment="Center" Margin="4,0,0,0"/>
+                </Grid>
+
+                <StackPanel Orientation="Horizontal" Margin="8,0,8,0">
+                    <Button Content="방위각 전송" Margin="0,0,4,0" Height="22"
+                            Command="{Binding SetAzimuthCommand}" Style="{StaticResource ActionButton}"/>
+                    <Button Content="고각 전송" Height="22"
+                            Command="{Binding SetElevationCommand}" Style="{StaticResource ActionButton}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Door -->
+        <Border Style="{StaticResource PanelBorder}" Padding="0,4,0,8">
+            <StackPanel>
+                <TextBlock Text="▸ 도어 / 개폐 제어" Style="{StaticResource SectionTitle}"/>
+                <StackPanel Orientation="Horizontal" Margin="8,2,8,0">
+                    <Button Content="▲ 도어 열기" Width="96" Height="26" Margin="0,0,6,0"
+                            Command="{Binding OpenDoorCommand}" Style="{StaticResource SimButton}"/>
+                    <Button Content="▼ 도어 닫기" Width="96" Height="26"
+                            Command="{Binding CloseDoorCommand}" Style="{StaticResource ActionButton}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

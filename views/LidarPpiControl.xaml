@@ -1,0 +1,93 @@
+<UserControl x:Class="AquaVectorUI.views.LidarPpiControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
+    <Border Style="{StaticResource PanelBorder}" Background="Black">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="▸ LIDAR PPI · 전방 180°"
+                       Style="{StaticResource SectionTitle}"/>
+
+            <Viewbox Grid.Row="1" Stretch="Uniform" Margin="6,2,6,6" VerticalAlignment="Bottom">
+                <Canvas Width="400" Height="220" x:Name="PpiCanvas">
+                    <!-- Semicircle background -->
+                    <Path Fill="#060a06" Stroke="Transparent">
+                        <Path.Data>
+                            <PathGeometry>
+                                <PathFigure StartPoint="0,210" IsClosed="True">
+                                    <ArcSegment Point="400,210" Size="200,200" SweepDirection="Clockwise" IsLargeArc="False"/>
+                                </PathFigure>
+                            </PathGeometry>
+                        </Path.Data>
+                    </Path>
+
+                    <!-- Distance rings -->
+                    <Path Stroke="#006600" StrokeThickness="0.7" Opacity="0.5">
+                        <Path.Data><PathGeometry><PathFigure StartPoint="160,210"><ArcSegment Point="240,210" Size="40,40"   SweepDirection="Clockwise"/></PathFigure></PathGeometry></Path.Data>
+                    </Path>
+                    <Path Stroke="#006600" StrokeThickness="0.7" Opacity="0.5">
+                        <Path.Data><PathGeometry><PathFigure StartPoint="120,210"><ArcSegment Point="280,210" Size="80,80"   SweepDirection="Clockwise"/></PathFigure></PathGeometry></Path.Data>
+                    </Path>
+                    <Path Stroke="#007700" StrokeThickness="0.8" Opacity="0.6">
+                        <Path.Data><PathGeometry><PathFigure StartPoint="80,210"><ArcSegment Point="320,210"  Size="120,120" SweepDirection="Clockwise"/></PathFigure></PathGeometry></Path.Data>
+                    </Path>
+                    <Path Stroke="#007700" StrokeThickness="0.8" Opacity="0.6">
+                        <Path.Data><PathGeometry><PathFigure StartPoint="40,210"><ArcSegment Point="360,210"  Size="160,160" SweepDirection="Clockwise"/></PathFigure></PathGeometry></Path.Data>
+                    </Path>
+                    <Path Stroke="#008800" StrokeThickness="1.2">
+                        <Path.Data><PathGeometry><PathFigure StartPoint="0,210"><ArcSegment Point="400,210"   Size="200,200" SweepDirection="Clockwise"/></PathFigure></PathGeometry></Path.Data>
+                    </Path>
+                    <Line X1="0" Y1="210" X2="400" Y2="210" Stroke="#008800" StrokeThickness="1.2"/>
+
+                    <!-- Angle guide lines -->
+                    <Line X1="200" Y1="210" X2="27"  Y2="110" Stroke="#005500" StrokeThickness="0.6" StrokeDashArray="3 4" Opacity="0.7"/>
+                    <Line X1="200" Y1="210" X2="100" Y2="37"  Stroke="#005500" StrokeThickness="0.6" StrokeDashArray="3 4" Opacity="0.7"/>
+                    <Line X1="200" Y1="210" X2="200" Y2="10"  Stroke="#008800" StrokeThickness="0.9"/>
+                    <Line X1="200" Y1="210" X2="300" Y2="37"  Stroke="#005500" StrokeThickness="0.6" StrokeDashArray="3 4" Opacity="0.7"/>
+                    <Line X1="200" Y1="210" X2="373" Y2="110" Stroke="#005500" StrokeThickness="0.6" StrokeDashArray="3 4" Opacity="0.7"/>
+
+                    <!-- Angle labels -->
+                    <TextBlock Text="0°"   Canvas.Left="2"   Canvas.Top="194" Foreground="#558855" FontFamily="Consolas" FontSize="9"/>
+                    <TextBlock Text="30°"  Canvas.Left="6"   Canvas.Top="96"  Foreground="#558855" FontFamily="Consolas" FontSize="9"/>
+                    <TextBlock Text="60°"  Canvas.Left="82"  Canvas.Top="24"  Foreground="#558855" FontFamily="Consolas" FontSize="9"/>
+                    <TextBlock Text="90°"  Canvas.Left="184" Canvas.Top="1"   Foreground="#88bb88" FontFamily="Consolas" FontSize="9" FontWeight="Bold"/>
+                    <TextBlock Text="120°" Canvas.Left="296" Canvas.Top="24"  Foreground="#558855" FontFamily="Consolas" FontSize="9"/>
+                    <TextBlock Text="150°" Canvas.Left="359" Canvas.Top="96"  Foreground="#558855" FontFamily="Consolas" FontSize="9"/>
+                    <TextBlock Text="180°" Canvas.Left="372" Canvas.Top="194" Foreground="#558855" FontFamily="Consolas" FontSize="9"/>
+
+                    <!-- Range labels -->
+                    <TextBlock Text="40m"  Canvas.Left="203" Canvas.Top="168" Foreground="#446644" FontFamily="Consolas" FontSize="8"/>
+                    <TextBlock Text="80m"  Canvas.Left="203" Canvas.Top="128" Foreground="#446644" FontFamily="Consolas" FontSize="8"/>
+                    <TextBlock Text="120m" Canvas.Left="203" Canvas.Top="88"  Foreground="#446644" FontFamily="Consolas" FontSize="8"/>
+                    <TextBlock Text="160m" Canvas.Left="203" Canvas.Top="48"  Foreground="#446644" FontFamily="Consolas" FontSize="8"/>
+
+                    <!-- Sweep trail lines (pre-allocated in code-behind) -->
+                    <Canvas x:Name="TrailCanvas" Width="400" Height="220" IsHitTestVisible="False"/>
+
+                    <!-- Dynamic LiDAR dot layer -->
+                    <Canvas x:Name="LidarDotCanvas" Width="400" Height="220" IsHitTestVisible="False"/>
+
+                    <!-- Scan line glow: wider soft bloom behind the bright line -->
+                    <Line x:Name="GlowLine"
+                          X1="200" Y1="210" X2="200" Y2="10"
+                          Stroke="#00ff44" StrokeThickness="10" Opacity="0.10"
+                          IsHitTestVisible="False"/>
+
+                    <!-- Scan line (animated by code-behind) -->
+                    <Line x:Name="ScanLine"
+                          X1="200" Y1="210" X2="200" Y2="10"
+                          Stroke="#00ff88" StrokeThickness="1.6" Opacity="1.0"
+                          IsHitTestVisible="False"/>
+
+                    <!-- Origin dot -->
+                    <Ellipse Canvas.Left="196" Canvas.Top="206" Width="8" Height="8"
+                             Fill="#00ff88" Stroke="#00bb66" StrokeThickness="1"/>
+                </Canvas>
+            </Viewbox>
+        </Grid>
+    </Border>
+</UserControl>
