@@ -1,0 +1,34 @@
+<UserControl x:Class="AquaVectorUI.views.TorpedoFirePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Style="{StaticResource PanelBorder}" Padding="0,4,0,8" BorderBrush="#3a1010">
+        <StackPanel>
+            <TextBlock Text="▸ 어뢰 발사" Style="{StaticResource SectionTitle}" Foreground="#ff8888"/>
+
+            <Grid Margin="8,2,8,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="목표 좌표 " Style="{StaticResource FieldLabel}"/>
+                <TextBlock Grid.Column="1" Text="{Binding SelectedCoordText}"
+                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                           VerticalAlignment="Center" TextWrapping="Wrap"/>
+            </Grid>
+
+            <Button Content="◎ 목표 조준 (방위각 자동 설정)"
+                    Margin="8,0,8,4" Height="24" HorizontalAlignment="Stretch"
+                    Command="{Binding AimAtTargetCommand}"
+                    Style="{StaticResource ActionButton}"/>
+
+            <Button Content="🚀  발사  FIRE"
+                    Margin="8,0,8,0" Height="36" HorizontalAlignment="Stretch"
+                    Command="{Binding FireCommand}"
+                    Style="{StaticResource FireButton}"/>
+
+            <TextBlock Text="* 맵을 클릭하여 목표 좌표를 선택하세요"
+                       Foreground="#664444" FontFamily="Consolas" FontSize="9"
+                       Margin="8,4,8,0" TextWrapping="Wrap"/>
+        </StackPanel>
+    </Border>
+</UserControl>
