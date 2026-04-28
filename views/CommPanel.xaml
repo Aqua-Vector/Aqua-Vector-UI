@@ -1,0 +1,46 @@
+<UserControl x:Class="AquaVectorUI.views.CommPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Style="{StaticResource PanelBorder}" Padding="0,4,0,8">
+        <StackPanel>
+            <TextBlock Text="▸ COMM" Style="{StaticResource SectionTitle}"/>
+
+            <StackPanel Orientation="Horizontal" Margin="8,0,8,4">
+                <RadioButton Content="UART"     IsChecked="{Binding IsUartSelected}"          Style="{StaticResource ProtoRadio}"/>
+                <RadioButton Content="Ethernet" IsChecked="{Binding IsEthernetSelected, Mode=OneWay}" Style="{StaticResource ProtoRadio}"/>
+                <Button Content="연결" Width="52" Height="22" Margin="4,0,0,0"
+                        Command="{Binding ConnectCommand}" Style="{StaticResource ActionButton}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="8,0,8,3"
+                        Visibility="{Binding UartVisibility}">
+                <TextBlock Text="PORT " Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding PortName}" Width="65" Style="{StaticResource DataBox}" Margin="0,0,8,0"/>
+                <TextBlock Text="BAUD " Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding BaudRate}" Width="72" Style="{StaticResource DataBox}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="8,0,8,3"
+                        Visibility="{Binding EthernetVisibility}">
+                <TextBlock Text="IP   " Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding IpAddress}" Width="100" Style="{StaticResource DataBox}" Margin="0,0,8,0"/>
+                <TextBlock Text="PORT " Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding TcpPort}" Width="50" Style="{StaticResource DataBox}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="8,2,8,4">
+                <TextBox Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource DataBox}" MinWidth="155" Margin="0,0,4,0"/>
+                <Button Content="전송" Width="50" Height="22"
+                        Command="{Binding SendCommand}" Style="{StaticResource ActionButton}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="8,0,8,2">
+                <Button Content="▶ SIM 시작" Width="90" Height="20" Margin="0,0,4,0"
+                        Command="{Binding StartSimulationCommand}" Style="{StaticResource SimButton}"/>
+                <Button Content="⏹ SIM 정지" Width="90" Height="20"
+                        Command="{Binding StopSimulationCommand}" Style="{StaticResource ActionButton}"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>
