@@ -1,0 +1,95 @@
+<UserControl x:Class="AquaVectorUI.views.ActuatorControlPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Style="{StaticResource PanelBorder}" Padding="0,4,0,8">
+        <StackPanel>
+            <TextBlock Text="▸ 개폐 장치" Style="{StaticResource SectionTitle}"/>
+
+            <Grid Margin="8,4,8,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="6"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 개방 버튼: 도어 open 상태 색상 (#0a3020 / #00ff88) -->
+                <Button Grid.Column="0" Content="개방" Height="36"
+                        Command="{Binding OpenDoorCommand}"
+                        Click="Button_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background"   Value="#0a3020"/>
+                            <Setter Property="Foreground"   Value="#00ff88"/>
+                            <Setter Property="BorderBrush"  Value="#1a6040"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="FontFamily"   Value="Consolas"/>
+                            <Setter Property="FontSize"     Value="12"/>
+                            <Setter Property="FontWeight"   Value="Bold"/>
+                            <Setter Property="Cursor"       Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="3" Padding="8,3">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#1a5030"/>
+                                                <Setter Property="BorderBrush" Value="#00ff88"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Opacity" Value="0.4"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- 폐쇄 버튼: 도어 closed 상태 색상 (#3a1010 / #ff6666) -->
+                <Button Grid.Column="2" Content="폐쇄" Height="36"
+                        Command="{Binding CloseDoorCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background"   Value="#3a1010"/>
+                            <Setter Property="Foreground"   Value="#ff6666"/>
+                            <Setter Property="BorderBrush"  Value="#6a2020"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="FontFamily"   Value="Consolas"/>
+                            <Setter Property="FontSize"     Value="12"/>
+                            <Setter Property="FontWeight"   Value="Bold"/>
+                            <Setter Property="Cursor"       Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="3" Padding="8,3">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#5a1818"/>
+                                                <Setter Property="BorderBrush" Value="#ff6666"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Opacity" Value="0.4"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

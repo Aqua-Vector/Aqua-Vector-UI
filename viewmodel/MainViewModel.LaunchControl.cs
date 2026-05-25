@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
+using System.Windows;
+using AquaVectorUI.services;
 
 namespace AquaVectorUI.viewmodel
 {
@@ -8,15 +10,21 @@ namespace AquaVectorUI.viewmodel
         [RelayCommand]
         public async Task OpenDoor()
         {
-            await Transmit("CMD:DOOR:OPEN");
-            AppendLog("명령: 발사관 도어 열기");
+            byte[] packet = CommandPacketBuilder.Build(NextCmdSeq(), PacketType.Door, true);
+            await TransmitBytes(packet);
+            IsDoorOpen     = true;
+            DoorStatusText = "OPEN";
+            AppendLog("[TCP] 도어 개방 명령 전송");
         }
 
         [RelayCommand]
         public async Task CloseDoor()
         {
-            await Transmit("CMD:DOOR:CLOSE");
-            AppendLog("명령: 발사관 도어 닫기");
+            byte[] packet = CommandPacketBuilder.Build(NextCmdSeq(), PacketType.Door, false);
+            await TransmitBytes(packet);
+            IsDoorOpen     = false;
+            DoorStatusText = "CLOSED";
+            AppendLog("[TCP] 도어 폐쇄 명령 전송");
         }
 
         [RelayCommand]
@@ -44,13 +52,40 @@ namespace AquaVectorUI.viewmodel
             AppendLog($"목표 조준: ({SelectedWorldX:F1}m, {SelectedWorldY:F1}m) → 방위각 {AzimuthDeg:F1}°");
         }
 
-        private bool CanFire() => HasSelectedPoint;
-
-        [RelayCommand(CanExecute = nameof(CanFire))]
+        [RelayCommand]
         public async Task Fire()
         {
-            await Transmit($"CMD:FIRE:{SelectedWorldX:F1},{SelectedWorldY:F1}");
-            AppendLog($"🚀 어뢰 발사! 목표: ({SelectedWorldX:F1}m, {SelectedWorldY:F1}m)");
+            var result = MessageBox.Show(
+                "어뢰를 발사하시겠습니까?\n\n이 명령은 즉시 실행됩니다.",
+                "발사 확인",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning,
+                MessageBoxResult.No);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            byte[] packet = CommandPacketBuilder.Build(NextCmdSeq(), PacketType.Fire, true);
+            await TransmitBytes(packet);
+            AppendLog($"[TCP] 어뢰 발사 명령 전송");
+        }
+
+        [RelayCommand]
+        public async Task TerminalGuidance()
+        {
+            var result = MessageBox.Show(
+                "종말 유도 명령을 전송하시겠습니까?\n\n이 명령은 즉시 실행됩니다.",
+                "종말 유도 확인",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning,
+                MessageBoxResult.No);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            byte[] packet = CommandPacketBuilder.Build(NextCmdSeq(), PacketType.TerminalGuidance, true);
+            await TransmitBytes(packet);
+            AppendLog("[TCP] 종말 유도 명령 전송");
         }
     }
 }

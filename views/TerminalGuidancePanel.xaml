@@ -1,0 +1,26 @@
+<UserControl x:Class="AquaVectorUI.views.TerminalGuidancePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Style="{StaticResource PanelBorder}" Padding="0,4,0,8" BorderBrush="#3a1010">
+        <StackPanel>
+            <TextBlock Text="▸ 종말 유도" Style="{StaticResource SectionTitle}" Foreground="#ff8888"/>
+
+            <Grid Margin="8,2,8,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="거리" Style="{StaticResource FieldLabel}"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding DistanceToTarget, StringFormat='{}{0:F2} m'}"
+                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                           VerticalAlignment="Center"/>
+            </Grid>
+
+            <Button Content="종말  유도"
+                    Margin="8,0,8,0" Height="48" HorizontalAlignment="Stretch"
+                    Command="{Binding TerminalGuidanceCommand}"
+                    Style="{StaticResource FireButton}"/>
+        </StackPanel>
+    </Border>
+</UserControl>

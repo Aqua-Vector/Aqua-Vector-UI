@@ -55,5 +55,12 @@ namespace AquaVectorUI.communication
             byte[] bytes = Encoding.UTF8.GetBytes(data);
             await _stream.WriteAsync(bytes, 0, bytes.Length);
         }
+
+        public async Task SendBytesAsync(byte[] data)
+        {
+            if (_stream == null || !IsConnected) return;
+            await _stream.WriteAsync(data, 0, data.Length);
+        }
     }
 }
+    

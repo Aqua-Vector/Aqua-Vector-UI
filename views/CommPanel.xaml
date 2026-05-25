@@ -28,19 +28,6 @@
                 <TextBox Text="{Binding TcpPort}" Width="50" Style="{StaticResource DataBox}"/>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Margin="8,2,8,4">
-                <TextBox Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource DataBox}" MinWidth="155" Margin="0,0,4,0"/>
-                <Button Content="전송" Width="50" Height="22"
-                        Command="{Binding SendCommand}" Style="{StaticResource ActionButton}"/>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Margin="8,0,8,2">
-                <Button Content="▶ SIM 시작" Width="90" Height="20" Margin="0,0,4,0"
-                        Command="{Binding StartSimulationCommand}" Style="{StaticResource SimButton}"/>
-                <Button Content="⏹ SIM 정지" Width="90" Height="20"
-                        Command="{Binding StopSimulationCommand}" Style="{StaticResource ActionButton}"/>
-            </StackPanel>
         </StackPanel>
     </Border>
 </UserControl>

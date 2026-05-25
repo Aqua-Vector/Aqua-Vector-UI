@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using AquaVectorUI.models;
 
 namespace AquaVectorUI.services
@@ -7,6 +8,11 @@ namespace AquaVectorUI.services
     public class LidarUpdateEventArgs : EventArgs
     {
         public List<LidarPoint> Points { get; init; } = new();
+    }
+
+    public class ObstacleUpdateEventArgs : EventArgs
+    {
+        public List<List<ObstaclePoint>> Obstacles { get; init; } = new();
     }
 
     public class PositionUpdateEventArgs : EventArgs
@@ -23,21 +29,23 @@ namespace AquaVectorUI.services
         public bool Detected { get; init; }
     }
 
-    // °³ÇàÀ¸·Î ±¸ºĞµÈ ¹®ÀÚ¿­À» ÆÄ½ÌÇÕ´Ï´Ù.
-    // ¿¹½Ã
-    // ¶óÀÌ´Ù:<angleDeg>,<distM>;<angleDeg>,<distM>;...
-    // ÁÂÇ¥:<worldX>,<worldY>,<headingDeg>
-    // °³Æó:<OPEN|CLOSED>
-    // ¾î·Ú:<ONLINE|OFFLINE>
-    // ¸ñÇ¥:<worldX>,<worldY>,<0|1>
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ğµï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Õ´Ï´ï¿½.
+    // ï¿½ï¿½ï¿½ï¿½
+    // ï¿½ï¿½ï¿½Ì´ï¿½:<angleDeg>,<distM>;<angleDeg>,<distM>;...
+    // ï¿½ï¿½Ç¥:<worldX>,<worldY>,<headingDeg>
+    // ï¿½ï¿½ï¿½ï¿½:<OPEN|CLOSED>
+    // ï¿½ï¿½ï¿½:<ONLINE|OFFLINE>
+    // ï¿½ï¿½Ç¥:<worldX>,<worldY>,<0|1>
     public class ProtocolParser
     {
         public event EventHandler<LidarUpdateEventArgs>? LidarUpdated;
         public event EventHandler<PositionUpdateEventArgs>? PositionUpdated;
         public event EventHandler<TargetUpdateEventArgs>? TargetUpdated;
+        public event EventHandler<ObstacleUpdateEventArgs>? ObstacleUpdated;
         public event EventHandler<bool>? DoorStatusChanged;
         public event EventHandler<bool>? TorpedoOnlineChanged;
         public event EventHandler<bool>? ArmedChanged;
+        public event EventHandler<string>? ParseError;
 
         public void Parse(string line)
         {
@@ -56,11 +64,16 @@ namespace AquaVectorUI.services
                 ArmedChanged?.Invoke(this, line[6..].Equals("TRUE", StringComparison.OrdinalIgnoreCase));
             else if (line.StartsWith("TARGET:"))
                 ParseTarget(line[7..]);
+            else if (line.StartsWith("[["))
+                ParseObstacles(line);
+            else
+                ParseError?.Invoke(this, $"ì•Œ ìˆ˜ ì—†ëŠ” í”„ë¦¬í”½ìŠ¤: '{line}'");
         }
 
         private void ParseLidar(string data)
         {
             var points = new List<LidarPoint>();
+            int badCount = 0;
             foreach (var pair in data.Split(';', StringSplitOptions.RemoveEmptyEntries))
             {
                 var parts = pair.Split(',');
@@ -70,7 +83,13 @@ namespace AquaVectorUI.services
                 {
                     points.Add(new LidarPoint { AngleDeg = angle, DistanceM = dist });
                 }
+                else
+                {
+                    badCount++;
+                }
             }
+            if (badCount > 0)
+                ParseError?.Invoke(this, $"LIDAR: íŒŒì‹± ì‹¤íŒ¨ í¬ì¸íŠ¸ {badCount}ê°œ (ì›ë³¸: '{data}')");
             if (points.Count > 0)
                 LidarUpdated?.Invoke(this, new LidarUpdateEventArgs { Points = points });
         }
@@ -85,6 +104,10 @@ namespace AquaVectorUI.services
             {
                 PositionUpdated?.Invoke(this, new PositionUpdateEventArgs { WorldX = x, WorldY = y, HeadingDeg = h });
             }
+            else
+            {
+                ParseError?.Invoke(this, $"POS: í˜•ì‹ ì˜¤ë¥˜ (í•„ë“œ ìˆ˜={parts.Length}, ì›ë³¸: '{data}')");
+            }
         }
 
         private void ParseTarget(string data)
@@ -97,6 +120,43 @@ namespace AquaVectorUI.services
             {
                 TargetUpdated?.Invoke(this, new TargetUpdateEventArgs { WorldX = x, WorldY = y, Detected = det != 0 });
             }
+            else
+            {
+                ParseError?.Invoke(this, $"TARGET: í˜•ì‹ ì˜¤ë¥˜ (í•„ë“œ ìˆ˜={parts.Length}, ì›ë³¸: '{data}')");
+            }
+        }
+
+        // Obstacle group regex: matches [[x,y],[x,y],...] blocks
+        private static readonly Regex _obstacleGroupRx =
+            new(@"\[(\[-?\d+,-?\d+\](?:,\[-?\d+,-?\d+\])*)\]", RegexOptions.Compiled);
+        private static readonly Regex _coordPairRx =
+            new(@"\[(-?\d+),(-?\d+)\]", RegexOptions.Compiled);
+
+        private void ParseObstacles(string data)
+        {
+            var obstacles = new List<List<ObstaclePoint>>();
+
+            foreach (Match groupMatch in _obstacleGroupRx.Matches(data))
+            {
+                var points = new List<ObstaclePoint>();
+                foreach (Match coord in _coordPairRx.Matches(groupMatch.Value))
+                {
+                    // Data format: [forwardDist, lateralOffset]
+                    // lateral (2nd) â†’ WorldX: negative = left, positive = right
+                    // forward (1st) â†’ WorldY: forward = up on display
+                    // Each grid unit = 5 cm â†’ convert to meters for rendering
+                    points.Add(new ObstaclePoint
+                    {
+                        WorldX = int.Parse(coord.Groups[2].Value) * 0.05,
+                        WorldY = int.Parse(coord.Groups[1].Value) * 0.05
+                    });
+                }
+                if (points.Count > 0)
+                    obstacles.Add(points);
+            }
+
+            if (obstacles.Count > 0)
+                ObstacleUpdated?.Invoke(this, new ObstacleUpdateEventArgs { Obstacles = obstacles });
         }
     }
 }

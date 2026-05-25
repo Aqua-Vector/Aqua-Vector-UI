@@ -11,7 +11,8 @@ namespace AquaVectorUI.communication
         Task ConnectAsync();
         Task DisconnectAsync();
         Task SendAsync(string data);
-        event Action<string> OnDataReceived; // 수신 이벤트
+        Task SendBytesAsync(byte[] data);
+        event Action<string> OnDataReceived;
         bool IsConnected { get; }
     }
 }
