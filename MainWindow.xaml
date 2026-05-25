@@ -12,47 +12,56 @@
     </Window.DataContext>
 
     <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="260" MinHeight="80"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="265" MinWidth="220"/>
+            <ColumnDefinition Width="425" MinWidth="220"/>
             <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="*"   MinWidth="420"/>
             <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="215" MinWidth="200"/>
         </Grid.ColumnDefinitions>
 
-        <!-- LEFT: COMM + LiDAR PPI + Log -->
-        <Grid Grid.Column="0">
+        <!-- LEFT: COMM + LiDAR PPI -->
+        <Grid Grid.Row="0" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="2.2*" MinHeight="180"/>
-                <RowDefinition Height="*"    MinHeight="100"/>
+                <RowDefinition Height="*" MinHeight="180"/>
             </Grid.RowDefinitions>
-            <views:CommPanel         Grid.Row="0"/>
-            <views:LidarPpiControl   Grid.Row="1"/>
-            <views:ReceiveLogControl Grid.Row="2"/>
+            <views:CommPanel       Grid.Row="0"/>
+            <views:LidarPpiControl Grid.Row="1"/>
         </Grid>
 
-        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"
+        <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"
                       Background="#1e3050" ResizeBehavior="PreviousAndNext"/>
 
         <!-- CENTER: Global map -->
-        <views:GlobalMapControl Grid.Column="2"/>
+        <views:GlobalMapControl Grid.Row="0" Grid.Column="2"/>
 
-        <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"
+        <GridSplitter Grid.Row="0" Grid.Column="3" Width="5" HorizontalAlignment="Stretch"
                       Background="#1e3050" ResizeBehavior="PreviousAndNext"/>
 
         <!-- RIGHT: Control panels -->
-        <ScrollViewer Grid.Column="4" VerticalScrollBarVisibility="Auto">
-
-
+        <ScrollViewer Grid.Row="0" Grid.Column="4" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <views:SystemStatusPanel/>
+                <views:ActuatorControlPanel/>
                 <!-- <views:LaunchControlPanel/> -->
                 <views:TorpedoFirePanel/>
-                <views:PathControlPanel/>
+                <!-- <views:PathControlPanel/> -->
+                <views:TerminalGuidancePanel/>
             </StackPanel>
         </ScrollViewer>
 
+        <!-- Horizontal splitter between main content and log -->
+        <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5"
+                      Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                      Background="#1e3050" ResizeBehavior="PreviousAndNext"/>
 
+        <!-- LOG: Full-width across all columns -->
+        <views:ReceiveLogControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5"/>
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Threading.Tasks;
 using AquaVectorUI.communication;
 
@@ -17,9 +18,17 @@ namespace AquaVectorUI.viewmodel
                     await Communication.DisconnectAsync();
                 }
 
-                Communication = IsUartSelected
-                    ? (ICommunication)new UartCommunication(PortName, BaudRate)
-                    : new EthernetCommunication(IpAddress, TcpPort);
+                if (IsUartSelected)
+                {
+                    var uart = new UartCommunication(PortName, BaudRate);
+                    uart.OnBinaryPacketReceived += DispatchUdpPacket;
+                    uart.OnParseError += msg => AppendLog($"[UART 파싱 오류] {msg}");
+                    Communication = uart;
+                }
+                else
+                {
+                    Communication = new EthernetCommunication(IpAddress, TcpPort);
+                }
 
                 Communication.OnDataReceived += OnDataReceived;
                 await Communication.ConnectAsync();
@@ -30,11 +39,35 @@ namespace AquaVectorUI.viewmodel
                     : $"연결됨: {IpAddress}:{TcpPort}";
                 AppendLog($"✅ 연결 성공: {(IsUartSelected ? PortName : IpAddress)}");
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 IsConnected = false;
                 ConnectionStatusText = "연결 실패";
                 AppendLog($"❌ 연결 실패: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        public async Task Disconnect()
+        {
+            try
+            {
+                if (Communication != null)
+                {
+                    Communication.OnDataReceived -= OnDataReceived;
+                    if (Communication is UartCommunication uart)
+                    uart.OnBinaryPacketReceived -= DispatchUdpPacket;
+                    await Communication.DisconnectAsync();
+                    Communication = null;
+                }
+
+                IsConnected = false;
+                ConnectionStatusText = "연결 안됨";
+                AppendLog("🔌 연결 해제");
+            }
+            catch (Exception ex)
+            {
+                AppendLog($"❌ 연결 해제 오류: {ex.Message}");
             }
         }
 

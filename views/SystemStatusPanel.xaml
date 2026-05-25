@@ -81,7 +81,7 @@
                 <Border Grid.Column="1">
                     <Border.Style>
                         <Style TargetType="Border" BasedOn="{StaticResource StatusPill}">
-                            <Setter Property="Background" Value="#3a2000"/>
+                            <Setter Property="Background" Value="#3a1010"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsDoorOpen}" Value="True">
                                     <Setter Property="Background" Value="#0a3020"/>
@@ -92,45 +92,10 @@
                     <TextBlock Text="{Binding DoorStatusText}" FontFamily="Consolas" FontSize="10">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="#ffaa44"/>
+                                <Setter Property="Foreground" Value="#ff6666"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsDoorOpen}" Value="True">
                                         <Setter Property="Foreground" Value="#00ff88"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </Border>
-            </Grid>
-
-            <!-- Armed -->
-            <Grid Margin="8,2,8,2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="52"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="무장" Style="{StaticResource FieldLabel}"/>
-                <Border Grid.Column="1">
-                    <Border.Style>
-                        <Style TargetType="Border" BasedOn="{StaticResource StatusPill}">
-                            <Setter Property="Background" Value="#3a1010"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsArmed}" Value="True">
-                                    <Setter Property="Background" Value="#2a0808"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                    <TextBlock FontFamily="Consolas" FontSize="10">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Text" Value="SAFE"/>
-                                <Setter Property="Foreground" Value="#66aaff"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsArmed}" Value="True">
-                                        <Setter Property="Text" Value="ARMED"/>
-                                        <Setter Property="Foreground" Value="#ff4444"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

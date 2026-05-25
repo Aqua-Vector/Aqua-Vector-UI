@@ -5,30 +5,58 @@
         <StackPanel>
             <TextBlock Text="▸ 어뢰 발사" Style="{StaticResource SectionTitle}" Foreground="#ff8888"/>
 
-            <Grid Margin="8,2,8,4">
+            <Grid Margin="8,2,8,2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="목표 좌표 " Style="{StaticResource FieldLabel}"/>
-                <TextBlock Grid.Column="1" Text="{Binding SelectedCoordText}"
+                <TextBlock Grid.Column="0" Text="X" Style="{StaticResource FieldLabel}"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding TargetWorldX, StringFormat='{}{0:F2} m'}"
                            Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
-                           VerticalAlignment="Center" TextWrapping="Wrap"/>
+                           VerticalAlignment="Center"/>
             </Grid>
 
-            <Button Content="◎ 목표 조준 (방위각 자동 설정)"
-                    Margin="8,0,8,4" Height="24" HorizontalAlignment="Stretch"
-                    Command="{Binding AimAtTargetCommand}"
-                    Style="{StaticResource ActionButton}"/>
+            <Grid Margin="8,2,8,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Y" Style="{StaticResource FieldLabel}"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding TargetWorldY, StringFormat='{}{0:F2} m'}"
+                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                           VerticalAlignment="Center"/>
+            </Grid>
+
+            <Grid Margin="8,2,8,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="방위" Style="{StaticResource FieldLabel}"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding TargetHeadingDeg, StringFormat='{}{0:F1}°'}"
+                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                           VerticalAlignment="Center"/>
+            </Grid>
+
+            <Grid Margin="8,2,8,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="속도" Style="{StaticResource FieldLabel}"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding TargetSpeedMs, StringFormat='{}{0:F2} m/s'}"
+                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                           VerticalAlignment="Center"/>
+            </Grid>
 
             <Button Content="🚀  발사  FIRE"
                     Margin="8,0,8,0" Height="36" HorizontalAlignment="Stretch"
                     Command="{Binding FireCommand}"
                     Style="{StaticResource FireButton}"/>
-
-            <TextBlock Text="* 맵을 클릭하여 목표 좌표를 선택하세요"
-                       Foreground="#664444" FontFamily="Consolas" FontSize="9"
-                       Margin="8,4,8,0" TextWrapping="Wrap"/>
         </StackPanel>
     </Border>
 </UserControl>
