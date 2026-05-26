@@ -8,6 +8,7 @@ using AquaVectorUI.communication;
 using AquaVectorUI.models;
 using AquaVectorUI.services;
 using System.Linq;
+using static AquaVectorUI.services.EnvConfig;
 
 namespace AquaVectorUI.viewmodel
 {
@@ -36,9 +37,9 @@ namespace AquaVectorUI.viewmodel
 
         [ObservableProperty] private string _portName = "COM21";
         [ObservableProperty] private int _baudRate = 115200;
-        [ObservableProperty] private string _ipAddress = "192.168.1.101";
-        [ObservableProperty] private int _tcpPort = 5000;
-        [ObservableProperty] private int _udpPort = 4000;
+        [ObservableProperty] private string _ipAddress = Get("ZYNQ_IP", "192.168.1.101");
+        [ObservableProperty] private int _tcpPort = GetInt("ZYNQ_TCP_PORT", 5000);
+        [ObservableProperty] private int _udpPort = GetInt("UDP_RECV_PORT", 4000);
         [ObservableProperty] private string _inputText = "";
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(FireCommand))]

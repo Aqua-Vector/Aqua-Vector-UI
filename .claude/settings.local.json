@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet build *)"
+      "Bash(dotnet build *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HEK_2\\\\Desktop\\\\Aqua-Vector\\\\Aqua-Vector-UI\" -Filter \".gitignore\" -Force)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HEK_2\\\\Desktop\\\\Aqua-Vector\" -Filter \".gitignore\" -Force)"
     ]
   }
 }

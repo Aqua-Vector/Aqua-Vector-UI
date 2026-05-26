@@ -1,12 +1,11 @@
 using System;
+using AquaVectorUI.services;
 
 namespace AquaVectorUI.models
 {
     public class TargetObject
     {
-        private const double StartX = -1.0;
-        private const double StopX  =  1.5;
-
+        public double StopX { get; set; }
         public double X          { get; set; }
         public double Y          { get; set; }
         public double HeadingDeg { get; set; }
@@ -14,10 +13,11 @@ namespace AquaVectorUI.models
 
         public TargetObject()
         {
-            X          = StartX;
-            Y          = 3;
-            HeadingDeg = 90;   // +X 방향 고정
-            SpeedMs    = 0.10;
+            StopX      = EnvConfig.GetDouble("TARGET_STOP_X", 1.5);
+            X          = EnvConfig.GetDouble("TARGET_START_X",      -1.0);
+            Y          = EnvConfig.GetDouble("TARGET_START_Y",       3.0);
+            HeadingDeg = EnvConfig.GetDouble("TARGET_HEADING_DEG",  90.0);
+            SpeedMs    = EnvConfig.GetDouble("TARGET_SPEED_MS",      0.10);
         }
 
         // X축으로만 이동, StopX 도달 시 정지.
