@@ -23,6 +23,10 @@ namespace AquaVectorUI.viewmodel
         internal readonly Random Rng = new();
         private ushort _cmdSeq = 0;
 
+        // ── Torpedo heartbeat (UDP coordinate timeout → OFFLINE) ──────
+        private readonly DispatcherTimer _torpedoHeartbeatTimer;
+        private static readonly TimeSpan TorpedoTimeout = TimeSpan.FromSeconds(3);
+
         // ── Connection ───────────────────────────────────────────────
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(UartVisibility))]
@@ -36,12 +40,18 @@ namespace AquaVectorUI.viewmodel
         [ObservableProperty] private int _tcpPort = 5000;
         [ObservableProperty] private int _udpPort = 4000;
         [ObservableProperty] private string _inputText = "";
-        [ObservableProperty] private bool _isConnected = false;
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(FireCommand))]
+        private bool _isConnected = false;
         [ObservableProperty] private string _connectionStatusText = "연결 안됨";
 
         // ── Torpedo / system state ────────────────────────────────────
-        [ObservableProperty] private bool _isTorpedoOnline = false;
-        [ObservableProperty] private bool _isDoorOpen = false;
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(FireCommand))]
+        private bool _isTorpedoOnline = false;
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(FireCommand))]
+        private bool _isDoorOpen = false;
         [ObservableProperty] private bool _isArmed = false;
         [ObservableProperty] private string _doorStatusText = "CLOSED";
         [ObservableProperty] private string _torpedoStatusText = "OFFLINE";
@@ -73,7 +83,6 @@ namespace AquaVectorUI.viewmodel
         // ── Selected map point ────────────────────────────────────────
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(AimAtTargetCommand))]
-        [NotifyCanExecuteChangedFor(nameof(FireCommand))]
         private bool _hasSelectedPoint = false;
 
         [ObservableProperty] private double _selectedWorldX = 0;
@@ -112,12 +121,31 @@ namespace AquaVectorUI.viewmodel
 
         public MainViewModel()
         {
+            _torpedoHeartbeatTimer = new DispatcherTimer { Interval = TorpedoTimeout };
+            _torpedoHeartbeatTimer.Tick += (s, e) =>
+            {
+                _torpedoHeartbeatTimer.Stop();
+                IsTorpedoOnline = false;
+                TorpedoStatusText = "OFFLINE";
+            };
+
             PathPoints.CollectionChanged += (s, e) => OnPropertyChanged(nameof(PathPointCount));
             WireParserEvents();
             WireLidarBinaryEvents();
             WireImuBinaryEvents();
             StartUdpReceiver();
             StartTargetTracking();
+        }
+
+        private void ResetTorpedoHeartbeat()
+        {
+            _torpedoHeartbeatTimer.Stop();
+            _torpedoHeartbeatTimer.Start();
+            if (!IsTorpedoOnline)
+            {
+                IsTorpedoOnline = true;
+                TorpedoStatusText = "ONLINE";
+            }
         }
 
         private void WireParserEvents()
@@ -203,6 +231,7 @@ namespace AquaVectorUI.viewmodel
                     TorpedoWorldY      = t.Y;
                     TorpedoHeadingDeg  = t.Yaw;
                     TorpedoPositionUpdated?.Invoke(this, EventArgs.Empty);
+                    ResetTorpedoHeartbeat();
 
                     // AppendLog($"[UDP] LiDAR seq={e.Packet.Seq}, 어뢰=({t.X:F2},{t.Y:F2}) yaw={t.Yaw:F1}°, 장애물 수={e.Packet.Objects.Count}");
                 });
@@ -221,6 +250,7 @@ namespace AquaVectorUI.viewmodel
                     TorpedoWorldX    = e.Packet.X;
                     TorpedoWorldY    = e.Packet.Y;
                     TorpedoPositionUpdated?.Invoke(this, EventArgs.Empty);
+                    ResetTorpedoHeartbeat();
                     AppendLog($"[UDP] IMU seq={e.Packet.Seq}  위치: ({e.Packet.X:F2}, {e.Packet.Y:F2})");
                 });
 

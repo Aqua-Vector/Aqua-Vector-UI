@@ -52,7 +52,9 @@ namespace AquaVectorUI.viewmodel
             AppendLog($"목표 조준: ({SelectedWorldX:F1}m, {SelectedWorldY:F1}m) → 방위각 {AzimuthDeg:F1}°");
         }
 
-        [RelayCommand]
+        private bool CanFire() => IsConnected && IsTorpedoOnline && IsDoorOpen;
+
+        [RelayCommand(CanExecute = nameof(CanFire))]
         public async Task Fire()
         {
             var result = MessageBox.Show(
@@ -68,6 +70,7 @@ namespace AquaVectorUI.viewmodel
             byte[] packet = CommandPacketBuilder.Build(NextCmdSeq(), PacketType.Fire, true);
             await TransmitBytes(packet);
             AppendLog($"[TCP] 어뢰 발사 명령 전송");
+            StartTargetMovement();
         }
 
         [RelayCommand]

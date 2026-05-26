@@ -4,8 +4,8 @@ namespace AquaVectorUI.models
 {
     public class TargetObject
     {
-        private const double XMin = -2, XMax = 2;
-        private const double YMin =   0, YMax = 8;
+        private const double StartX = -1.0;
+        private const double StopX  =  1.5;
 
         public double X          { get; set; }
         public double Y          { get; set; }
@@ -14,23 +14,19 @@ namespace AquaVectorUI.models
 
         public TargetObject()
         {
-            X          = -1;
+            X          = StartX;
             Y          = 3;
-            HeadingDeg = 90;  // 0=위, +90=오른쪽, -90=왼쪽 (-180~180)
-            SpeedMs    = 0.25;
+            HeadingDeg = 90;   // +X 방향 고정
+            SpeedMs    = 0.10;
         }
 
-        // X 경계 충돌 시 heading *= -1 (좌우 반전). Y는 변하지 않으므로 클램프만.
+        // X축으로만 이동, StopX 도달 시 정지.
         public void Advance(double deltaTimeSec)
         {
-            double rad = HeadingDeg * Math.PI / 180.0;
-            X += SpeedMs * Math.Sin(rad) * deltaTimeSec;
-            Y += SpeedMs * Math.Cos(rad) * deltaTimeSec;
+            if (X >= StopX) return;
 
-            if      (X < XMin) { X = XMin; HeadingDeg *= -1; }
-            else if (X > XMax) { X = XMax; HeadingDeg *= -1; }
-
-            Y = Math.Clamp(Y, YMin, YMax);
+            X += SpeedMs * deltaTimeSec;
+            if (X > StopX) X = StopX;
         }
     }
 }

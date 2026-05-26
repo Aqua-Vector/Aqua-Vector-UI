@@ -17,11 +17,11 @@ namespace AquaVectorUI.viewmodel
 
         internal void StartTargetTracking()
         {
-            // Sync observable properties to initial model state before timer fires
-            TargetWorldX    = CurrentTarget.X;
-            TargetWorldY    = CurrentTarget.Y;
+            // 초기 위치만 바인딩에 반영 — 타이머는 발사 후 시작
+            TargetWorldX     = CurrentTarget.X;
+            TargetWorldY     = CurrentTarget.Y;
             TargetHeadingDeg = CurrentTarget.HeadingDeg;
-            TargetSpeedMs   = CurrentTarget.SpeedMs;
+            TargetSpeedMs    = CurrentTarget.SpeedMs;
 
             _targetTimer = new DispatcherTimer
             {
@@ -38,9 +38,14 @@ namespace AquaVectorUI.viewmodel
 
                 TargetPositionUpdated?.Invoke(this, EventArgs.Empty);
             };
-            _targetTimer.Start();
+            // _targetTimer.Start() 은 Fire() 이후에 호출
 
             StartTargetSender();
+        }
+
+        internal void StartTargetMovement()
+        {
+            _targetTimer?.Start();
         }
 
         private void StartTargetSender()
