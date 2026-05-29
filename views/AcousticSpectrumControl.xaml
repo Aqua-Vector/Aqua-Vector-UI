@@ -34,13 +34,13 @@
             <Grid Grid.Row="1"
                   Margin="8,0,8,3">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="28"/>
+                    <ColumnDefinition Width="52"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0"
                       Margin="0,1,5,1">
-                    <TextBlock Text="0"
+                    <TextBlock Text="dBFS 0"
                                Foreground="#5f7484"
                                FontFamily="Consolas"
                                FontSize="9"
@@ -113,7 +113,7 @@
                                Padding="3,0"
                                Canvas.Top="4"/>
                     <TextBlock x:Name="FStartLabel"
-                               Text="100"
+                               Text=""
                                Foreground="#5f7484"
                                Background="#071018"
                                FontFamily="Consolas"
@@ -172,7 +172,7 @@
                 <TextBlock x:Name="MetricsLabel"
                            Grid.Row="0"
                            Grid.Column="0"
-                           Text="SNR -- dB | L -- dB | R -- dB"
+                           Text="SNR -- dB | L -- dBFS | R -- dBFS"
                            Foreground="#d7e4ee"
                            FontFamily="Consolas"
                            FontSize="10"

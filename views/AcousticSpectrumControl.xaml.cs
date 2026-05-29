@@ -189,7 +189,7 @@ namespace AquaVectorUI.views
             _lastLocked = locked;
 
             SetLiveStatus();
-            MetricsLabel.Text = $"SNR {snr:F1} dB | L {leftTarget:F1} dB | R {rightTarget:F1} dB";
+            MetricsLabel.Text = $"SNR {snr:F1} dB | L {leftTarget:F1} dBFS | R {rightTarget:F1} dBFS";
             DirectionLabel.Text = DirectionText(direction);
             PeakLabel.Text = $"Tone peaks {targetTrackFreq:F0}/{secondaryTrackFreq:F0} Hz | Confidence {confidence:F0}%";
         }
@@ -298,7 +298,7 @@ namespace AquaVectorUI.views
             Array.Clear(_rightSpectrum, 0, _rightSpectrum.Length);
             SpectrumLineLeft.Points = new PointCollection();
             SpectrumLineRight.Points = new PointCollection();
-            MetricsLabel.Text = "SNR -- dB | L -- dB | R -- dB";
+            MetricsLabel.Text = "SNR -- dB | L -- dBFS | R -- dBFS";
             DirectionLabel.Text = "CENTER";
             PeakLabel.Text = "Tone peaks --/-- Hz | Confidence --%";
         }
