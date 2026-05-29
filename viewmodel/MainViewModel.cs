@@ -43,6 +43,7 @@ namespace AquaVectorUI.viewmodel
         [ObservableProperty] private bool _isTorpedoOnline = false;
         [ObservableProperty] private bool _isDoorOpen = false;
         [ObservableProperty] private bool _isArmed = false;
+        [ObservableProperty] private bool _isAcousticMonitoringEnabled = false;
         [ObservableProperty] private string _doorStatusText = "CLOSED";
         [ObservableProperty] private string _torpedoStatusText = "OFFLINE";
 

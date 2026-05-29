@@ -67,7 +67,9 @@ namespace AquaVectorUI.viewmodel
 
             byte[] packet = CommandPacketBuilder.Build(NextCmdSeq(), PacketType.Fire, true);
             await TransmitBytes(packet);
+            IsAcousticMonitoringEnabled = true;
             AppendLog($"[TCP] 어뢰 발사 명령 전송");
+            AppendLog("[ACOUSTIC] 발사상태 진입: 음향 수신/표시 활성화");
         }
 
         [RelayCommand]

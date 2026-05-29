@@ -29,10 +29,13 @@
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="210"/>
                 <RowDefinition Height="*" MinHeight="180"/>
             </Grid.RowDefinitions>
             <views:CommPanel       Grid.Row="0"/>
-            <views:LidarPpiControl Grid.Row="1"/>
+            <views:AcousticSpectrumControl Grid.Row="1"
+                                           IsMonitoringEnabled="{Binding IsAcousticMonitoringEnabled}"/>
+            <views:LidarPpiControl Grid.Row="2"/>
         </Grid>
 
         <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"
