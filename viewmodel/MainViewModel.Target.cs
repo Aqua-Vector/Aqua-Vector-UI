@@ -53,10 +53,10 @@ namespace AquaVectorUI.viewmodel
             try
             {
                 _targetSender = new UdpTargetSender();
-                _targetSender.PacketSent += (seq, x, y) =>
-                {
-                    if (seq % 500 == 0) AppendLog($"[UDP TX] 목표 seq={seq}  ({x:F2}, {y:F2})");
-                };
+                //_targetSender.PacketSent += (seq, x, y) =>
+                //{
+                //    if (seq % 500 == 0) AppendLog($"[UDP TX] 목표 seq={seq}  ({x:F2}, {y:F2})");
+                //};
                 _targetSender.Error += msg => AppendLog($"[UDP TX] {msg}");
                 _targetSender.Start(IpAddress, TargetUdpSendPort,
                     () => ((float)TargetWorldX, (float)TargetWorldY));

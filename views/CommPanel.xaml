@@ -6,26 +6,39 @@
             <TextBlock Text="▸ COMM" Style="{StaticResource SectionTitle}"/>
 
             <StackPanel Orientation="Horizontal" Margin="8,0,8,4">
-                <RadioButton Content="UART"     IsChecked="{Binding IsUartSelected}"          Style="{StaticResource ProtoRadio}"/>
-                <RadioButton Content="Ethernet" IsChecked="{Binding IsEthernetSelected, Mode=OneWay}" Style="{StaticResource ProtoRadio}"/>
-                <Button Content="연결" Width="52" Height="22" Margin="4,0,0,0"
-                        Command="{Binding ConnectCommand}" Style="{StaticResource ActionButton}"/>
+                <!--<RadioButton Content="UART"
+                             IsChecked="{Binding IsUartSelected}"
+                             Style="{StaticResource ProtoRadio}" />
+                <RadioButton Content="Ethernet" IsChecked="{Binding IsEthernetSelected, Mode=OneWay}" Style="{StaticResource ProtoRadio}"/>-->
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Margin="8,0,8,3"
+            <!--<StackPanel Orientation="Horizontal"
+                        Margin="8,0,8,3"
                         Visibility="{Binding UartVisibility}">
-                <TextBlock Text="PORT " Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding PortName}" Width="65" Style="{StaticResource DataBox}" Margin="0,0,8,0"/>
-                <TextBlock Text="BAUD " Style="{StaticResource FieldLabel}"/>
-                <TextBox Text="{Binding BaudRate}" Width="72" Style="{StaticResource DataBox}"/>
-            </StackPanel>
+                <TextBlock Text="PORT "
+                           Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding PortName}"
+                         Width="65"
+                         Style="{StaticResource DataBox}"
+                         Margin="0,0,8,0" />
+                <TextBlock Text="BAUD "
+                           Style="{StaticResource FieldLabel}" />
+                <TextBox Text="{Binding BaudRate}"
+                         Width="72"
+                         Style="{StaticResource DataBox}" />
+            </StackPanel>-->
 
-            <StackPanel Orientation="Horizontal" Margin="8,0,8,3"
-                        Visibility="{Binding EthernetVisibility}">
+            <StackPanel Orientation="Horizontal" Margin="8,0,8,3">
                 <TextBlock Text="IP   " Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding IpAddress}" Width="100" Style="{StaticResource DataBox}" Margin="0,0,8,0"/>
                 <TextBlock Text="PORT " Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding TcpPort}" Width="50" Style="{StaticResource DataBox}"/>
+                <Button Content="연결"
+                        Width="52"
+                        Height="22"
+                        Margin="4,0,0,0"
+                        Command="{Binding ConnectCommand}"
+                        Style="{StaticResource ActionButton}" />
             </StackPanel>
 
         </StackPanel>

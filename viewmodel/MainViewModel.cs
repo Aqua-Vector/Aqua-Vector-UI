@@ -20,6 +20,7 @@ namespace AquaVectorUI.viewmodel
         internal readonly ProtocolParser Parser = new();
         internal readonly LidarPacketParser LidarBinaryParser = new();
         internal readonly TargetPacketParser TargetBinaryParser = new();
+        internal readonly PredictedPathPacketParser PredictedPathParser = new();
         internal UdpLidarReceiver? UdpLidarReceiver;
         internal readonly Random Rng = new();
         private ushort _cmdSeq = 0;
@@ -33,7 +34,7 @@ namespace AquaVectorUI.viewmodel
         [NotifyPropertyChangedFor(nameof(UartVisibility))]
         [NotifyPropertyChangedFor(nameof(EthernetVisibility))]
         [NotifyPropertyChangedFor(nameof(IsEthernetSelected))]
-        private bool _isUartSelected = true;
+        private bool _isUartSelected = false;
 
         [ObservableProperty] private string _portName = "COM21";
         [ObservableProperty] private int _baudRate = 115200;
@@ -103,6 +104,7 @@ namespace AquaVectorUI.viewmodel
         public ObservableCollection<PathPoint> PathPoints { get; } = new();
         public List<LidarPoint> CurrentLidarScan { get; } = new();
         public List<List<ObstaclePoint>> CurrentObstacles { get; } = new();
+        public List<(float X, float Y)> PredictedPath { get; } = new();
 
         // ── Render events (UserControls subscribe in Loaded) ──────────
         public event EventHandler? LidarUpdated;
@@ -110,6 +112,7 @@ namespace AquaVectorUI.viewmodel
         public event EventHandler? TorpedoPositionUpdated;
         public event EventHandler? TargetPositionUpdated;
         public event EventHandler? SelectedPointUpdated;
+        public event EventHandler? PredictedPathUpdated;
 
         // ── Computed properties ───────────────────────────────────────
         public Visibility UartVisibility => IsUartSelected ? Visibility.Visible : Visibility.Collapsed;
@@ -134,6 +137,7 @@ namespace AquaVectorUI.viewmodel
             WireParserEvents();
             WireLidarBinaryEvents();
             WireImuBinaryEvents();
+            WirePredictedPathEvents();
             StartUdpReceiver();
             StartTargetTracking();
         }
@@ -230,7 +234,7 @@ namespace AquaVectorUI.viewmodel
                     CurrentTorpedo.Yaw = t.Yaw;
                     TorpedoWorldX      = t.X;
                     TorpedoWorldY      = t.Y;
-                    TorpedoHeadingDeg  = t.Yaw;
+                    TorpedoHeadingDeg  = t.Yaw * 180.0 / Math.PI;
                     TorpedoPositionUpdated?.Invoke(this, EventArgs.Empty);
                     ResetTorpedoHeartbeat();
 
@@ -259,12 +263,41 @@ namespace AquaVectorUI.viewmodel
                 Application.Current.Dispatcher.InvokeAsync(() => AppendLog($"[UDP] {msg}"));
         }
 
-        // Routes incoming UDP packets by size: TorpedoPacket is exactly 14 B (fixed);
-        // LiDAR packets are ≥ 15 B (13 B header + ≥ 0 objects + 2 B CRC).
+        private void WirePredictedPathEvents()
+        {
+            PredictedPathParser.PacketParsed += (s, e) =>
+                Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    PredictedPath.Clear();
+                    PredictedPath.AddRange(e.Packet.Points);
+                    PredictedPathUpdated?.Invoke(this, EventArgs.Empty);
+
+                    var pts = e.Packet.Points;
+                    string preview = pts.Count > 0
+                        ? string.Join(" → ", pts.Take(3).Select(p => $"({p.X:F1},{p.Y:F1})"))
+                          + (pts.Count > 3 ? $" ... +{pts.Count - 3}개" : "")
+                        : "(없음)";
+                    AppendLog($"[PATH] seq={e.Packet.Seq} 점={pts.Count}개  {preview}");
+                });
+
+            PredictedPathParser.ParseError += (s, msg) =>
+                Application.Current.Dispatcher.InvokeAsync(() => AppendLog($"[PATH] 파싱 오류: {msg}"));
+        }
+
+        // Routes incoming UDP packets by sync byte:
+        //   0xAC → predicted path (variable length, ≥ 7 B)
+        //   0xAA + 14 B → IMU/torpedo position
+        //   0xAA + other → LiDAR scan
         private void DispatchUdpPacket(byte[] data)
         {
             if (data.Length < 7) return;
-            if (data.Length == 14)
+
+            if (data[0] == 0xAC)
+            {
+                AppendLog($"[PATH] 수신 {data.Length}B  raw: {string.Join(" ", data.Take(Math.Min(data.Length, 10)).Select(b => $"{b:X2}"))}...");
+                PredictedPathParser.Parse(data);
+            }
+            else if (data.Length == 14)
                 TargetBinaryParser.Parse(data);
             else
                 LidarBinaryParser.Parse(data);

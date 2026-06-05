@@ -48,6 +48,7 @@ namespace AquaVectorUI.views
             _vm.SelectedPointUpdated            += (_, _) => RefreshSelectedMarker();
             _vm.ObstaclesUpdated                += (_, _) => RefreshObstacles();
             _vm.PathPoints.CollectionChanged    += (_, _) => RefreshPath();
+            _vm.PredictedPathUpdated            += (_, _) => RefreshPredictedPath();
             RefreshAll();
         }
 
@@ -114,6 +115,7 @@ namespace AquaVectorUI.views
             RefreshSelectedMarker();
             RefreshPath();
             RefreshObstacles();
+            RefreshPredictedPath();
         }
 
         // ── Grid ──────────────────────────────────────────────────────
@@ -381,6 +383,16 @@ namespace AquaVectorUI.views
             PathPolyline.Points = pts;
         }
 
+        // ── Predicted path ────────────────────────────────────────────
+        private void RefreshPredictedPath()
+        {
+            if (_vm == null) return;
+            var pts = new PointCollection();
+            foreach (var (x, y) in _vm.PredictedPath)
+                pts.Add(new Point(ToCanvasX(x), ToCanvasY(y)));
+            PredictedPathPolyline.Points = pts;
+        }
+
         // ── Mouse events ─────────────────────────────────────────────
         private void MapCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -391,7 +403,7 @@ namespace AquaVectorUI.views
 
             // Torpedo hit-test — center is TorpedoCanvas origin + (7,7)
             double torpCx = Canvas.GetLeft(TorpedoCanvas) + 7;
-            double torpCy = Canvas.GetTop(TorpedoCanvas)  + 7;
+            double torpCy = Canvas.GetTop(TorpedoCanvas) + 7;
             if (Dist(cx, cy, torpCx, torpCy) <= 12)
             {
                 _infoTarget = InfoTarget.Torpedo;

@@ -28,6 +28,9 @@
                     <TextBlock Text="목표"   Foreground="#a0b8cc" FontFamily="Consolas" FontSize="10" Margin="0,0,12,0"/>
                     <Rectangle Width="8" Height="8" Fill="#ffaa00" Margin="0,0,3,0"/>
                     <TextBlock Text="장애물" Foreground="#a0b8cc" FontFamily="Consolas" FontSize="10" Margin="0,0,12,0"/>
+                    <Line X1="0" Y1="4" X2="16" Y2="4" Stroke="#00ccff" StrokeThickness="1.5"
+                          StrokeDashArray="4 2" Width="16" Height="8" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="예측 경로" Foreground="#a0b8cc" FontFamily="Consolas" FontSize="10" Margin="0,0,12,0"/>
                     <!--
                     <TextBlock Text="+" Foreground="#44aaff" FontFamily="Consolas" FontSize="14" Margin="0,0,3,0" VerticalAlignment="Center"/>
                     <TextBlock Text="선택"   Foreground="#a0b8cc" FontFamily="Consolas" FontSize="10"/>
@@ -81,6 +84,9 @@
 
                     <Polyline x:Name="PathPolyline" Stroke="#ffaa00" StrokeThickness="1.5"
                               StrokeDashArray="4 3" Opacity="0.75"/>
+
+                    <Polyline x:Name="PredictedPathPolyline" Stroke="#00ccff" StrokeThickness="1.5"
+                              StrokeDashArray="6 3" Opacity="0.85"/>
 
                     <Line x:Name="AimLine" Stroke="#4488ff" StrokeThickness="1"
                           StrokeDashArray="5 4" Opacity="0"
