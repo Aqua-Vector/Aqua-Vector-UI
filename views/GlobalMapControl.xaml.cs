@@ -29,6 +29,9 @@ namespace AquaVectorUI.views
         private const double CanvasTop    = 20;
         private const double CanvasBottom = 440;
 
+        private const int MaxTrailPoints = 500;
+        private readonly List<(double X, double Y)> _torpedoTrail = [];
+
         private enum InfoTarget { None, Torpedo, Target, Obstacle }
         private InfoTarget _infoTarget = InfoTarget.None;
         private double _infoObstacleWorldX, _infoObstacleWorldY;
@@ -43,12 +46,23 @@ namespace AquaVectorUI.views
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             _vm = (MainViewModel)DataContext;
-            _vm.TorpedoPositionUpdated          += (_, _) => RefreshTorpedo();
-            _vm.TargetPositionUpdated           += (_, _) => RefreshTarget();
-            _vm.SelectedPointUpdated            += (_, _) => RefreshSelectedMarker();
-            _vm.ObstaclesUpdated                += (_, _) => RefreshObstacles();
-            _vm.PathPoints.CollectionChanged    += (_, _) => RefreshPath();
-            _vm.PredictedPathUpdated            += (_, _) => RefreshPredictedPath();
+            _vm.TorpedoPositionUpdated       += (_, _) => { AppendTorpedoTrail(); RefreshTorpedo(); };
+            _vm.TargetPositionUpdated        += (_, _) => RefreshTarget();
+            _vm.SelectedPointUpdated         += (_, _) => RefreshSelectedMarker();
+            _vm.ObstaclesUpdated             += (_, _) => RefreshObstacles();
+            _vm.PathPoints.CollectionChanged += (_, _) => RefreshPath();
+            _vm.PredictedPathUpdated         += (_, _) => RefreshPredictedPath();
+
+            // Belt-and-suspenders: also update torpedo marker on direct property changes
+            // (covers any code path that sets TorpedoWorldX/Y without firing TorpedoPositionUpdated)
+            _vm.PropertyChanged += (s, e2) =>
+            {
+                if (e2.PropertyName is nameof(MainViewModel.TorpedoWorldX)
+                    or nameof(MainViewModel.TorpedoWorldY)
+                    or nameof(MainViewModel.TorpedoHeadingDeg))
+                    RefreshTorpedo();
+            };
+
             RefreshAll();
         }
 
@@ -114,6 +128,7 @@ namespace AquaVectorUI.views
             RefreshTarget();
             RefreshSelectedMarker();
             RefreshPath();
+            RefreshTrail();
             RefreshObstacles();
             RefreshPredictedPath();
         }
@@ -278,8 +293,13 @@ namespace AquaVectorUI.views
             double ax = cx + Math.Sin(headRad) * arrowLen;
             double ay = cy - Math.Cos(headRad) * arrowLen;
 
+            // Move entire torpedo canvas (marker, heading line, arrow, label all follow)
             Canvas.SetLeft(TorpedoCanvas, cx - 7);
             Canvas.SetTop(TorpedoCanvas,  cy - 7);
+
+            // Explicitly anchor marker at (0,0) within TorpedoCanvas so it always aligns with cx,cy
+            Canvas.SetLeft(TorpedoMarker, 0);
+            Canvas.SetTop(TorpedoMarker,  0);
 
             TorpedoHeadingLine.X1 = 7; TorpedoHeadingLine.Y1 = 7;
             TorpedoHeadingLine.X2 = 7 + (ax - cx);
@@ -302,6 +322,30 @@ namespace AquaVectorUI.views
 
             if (_vm.HasSelectedPoint) RefreshAimLine(cx, cy);
             UpdateInfoOverlay();
+        }
+
+        // ── Torpedo trail ─────────────────────────────────────────────
+        private void AppendTorpedoTrail()
+        {
+            if (_vm == null) return;
+            double x = _vm.TorpedoWorldX;
+            double y = _vm.TorpedoWorldY;
+            if (_torpedoTrail.Count > 0)
+            {
+                var last = _torpedoTrail[^1];
+                if (Math.Abs(last.X - x) < 0.001 && Math.Abs(last.Y - y) < 0.001) return;
+            }
+            _torpedoTrail.Add((x, y));
+            if (_torpedoTrail.Count > MaxTrailPoints)
+                _torpedoTrail.RemoveAt(0);
+        }
+
+        private void RefreshTrail()
+        {
+            var pts = new PointCollection();
+            foreach (var (x, y) in _torpedoTrail)
+                pts.Add(new Point(ToCanvasX(x), ToCanvasY(y)));
+            TrailPolyline.Points = pts;
         }
 
         // ── Target ───────────────────────────────────────────────────
