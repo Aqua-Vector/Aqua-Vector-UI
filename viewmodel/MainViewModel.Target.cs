@@ -38,7 +38,7 @@ namespace AquaVectorUI.viewmodel
 
                 TargetPositionUpdated?.Invoke(this, EventArgs.Empty);
             };
-            // _targetTimer.Start() 은 Fire() 이후에 호출
+            _targetTimer.Start();
 
             StartTargetSender();
         }

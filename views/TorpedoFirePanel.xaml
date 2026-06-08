@@ -2,61 +2,106 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Border Style="{StaticResource PanelBorder}" Padding="0,4,0,8" BorderBrush="#3a1010">
-        <StackPanel>
-            <TextBlock Text="▸ 어뢰 발사" Style="{StaticResource SectionTitle}" Foreground="#ff8888"/>
+        <Border.Resources>
+            <BooleanToVisibilityConverter x:Key="BoolVis"/>
+        </Border.Resources>
+        <Grid>
+            <!-- Original panel content -->
+            <StackPanel>
+                <TextBlock Text="▸ 어뢰 발사" Style="{StaticResource SectionTitle}" Foreground="#ff8888"/>
 
-            <Grid Margin="8,2,8,2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="X" Style="{StaticResource FieldLabel}"/>
-                <TextBlock Grid.Column="1"
-                           Text="{Binding TargetWorldX, StringFormat='{}{0:F2} m'}"
-                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
-                           VerticalAlignment="Center"/>
-            </Grid>
+                <Grid Margin="8,2,8,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="X" Style="{StaticResource FieldLabel}"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding TargetWorldX, StringFormat='{}{0:F2} m'}"
+                               Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                               VerticalAlignment="Center"/>
+                </Grid>
 
-            <Grid Margin="8,2,8,2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Y" Style="{StaticResource FieldLabel}"/>
-                <TextBlock Grid.Column="1"
-                           Text="{Binding TargetWorldY, StringFormat='{}{0:F2} m'}"
-                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
-                           VerticalAlignment="Center"/>
-            </Grid>
+                <Grid Margin="8,2,8,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Y" Style="{StaticResource FieldLabel}"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding TargetWorldY, StringFormat='{}{0:F2} m'}"
+                               Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                               VerticalAlignment="Center"/>
+                </Grid>
 
-            <Grid Margin="8,2,8,2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="방위" Style="{StaticResource FieldLabel}"/>
-                <TextBlock Grid.Column="1"
-                           Text="{Binding TargetHeadingDeg, StringFormat='{}{0:F1}°'}"
-                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
-                           VerticalAlignment="Center"/>
-            </Grid>
+                <Grid Margin="8,2,8,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="방위" Style="{StaticResource FieldLabel}"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding TargetHeadingDeg, StringFormat='{}{0:F1}°'}"
+                               Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                               VerticalAlignment="Center"/>
+                </Grid>
 
-            <Grid Margin="8,2,8,6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="속도" Style="{StaticResource FieldLabel}"/>
-                <TextBlock Grid.Column="1"
-                           Text="{Binding TargetSpeedMs, StringFormat='{}{0:F2} m/s'}"
-                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
-                           VerticalAlignment="Center"/>
-            </Grid>
+                <Grid Margin="8,2,8,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="속도" Style="{StaticResource FieldLabel}"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding TargetSpeedMs, StringFormat='{}{0:F2} m/s'}"
+                               Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                               VerticalAlignment="Center"/>
+                </Grid>
 
-            <Button Content="🚀  발사  FIRE"
-                    Margin="8,0,8,0" Height="36" HorizontalAlignment="Stretch"
-                    Command="{Binding FireCommand}"
-                    Style="{StaticResource FireButton}"/>
-        </StackPanel>
+                <Button Content="🚀  발사  FIRE"
+                        Margin="8,0,8,0" Height="36" HorizontalAlignment="Stretch"
+                        Command="{Binding FireCommand}"
+                        Style="{StaticResource FireButton}"/>
+            </StackPanel>
+
+            <!-- Confirmation overlay (covers the entire panel) -->
+            <Border Background="#E8131f2e"
+                    CornerRadius="3"
+                    Visibility="{Binding IsFireConfirmVisible, Converter={StaticResource BoolVis}}">
+                <StackPanel VerticalAlignment="Center" Margin="12,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="⚠" Foreground="#ffaa00" FontSize="14"
+                                   VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="발사 확인"
+                                   FontFamily="Consolas" FontSize="12" FontWeight="Bold"
+                                   Foreground="#ff8888" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="어뢰를 발사하시겠습니까?"
+                               FontFamily="Consolas" FontSize="11" Foreground="#c5c5c5"
+                               Margin="0,0,0,2"/>
+                    <TextBlock Text="이 명령은 즉시 실행됩니다."
+                               FontFamily="Consolas" FontSize="10" Foreground="#888888"
+                               Margin="0,0,0,10"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0"
+                                Content="예 (YES)"
+                                Command="{Binding ConfirmFireCommand}"
+                                Style="{StaticResource ActionButton}"
+                                Background="#5a0808" Foreground="#ff8888" BorderBrush="#aa2222"
+                                FontWeight="Bold" Height="26"/>
+                        <Button Grid.Column="2"
+                                Content="취소"
+                                Command="{Binding CancelFireConfirmCommand}"
+                                Style="{StaticResource ActionButton}"
+                                Height="26"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Border>
 </UserControl>

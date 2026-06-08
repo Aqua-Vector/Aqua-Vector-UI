@@ -1,12 +1,21 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
-using System.Windows;
 using AquaVectorUI.services;
 
 namespace AquaVectorUI.viewmodel
 {
     public partial class MainViewModel
     {
+        [ObservableProperty]
+        private bool _isFireConfirmVisible;
+
+        [ObservableProperty]
+        private bool _isTerminalGuidanceConfirmVisible;
+
+        [ObservableProperty]
+        private bool _isTorpedoFired;
+
         [RelayCommand]
         public async Task OpenDoor()
         {
@@ -54,41 +63,41 @@ namespace AquaVectorUI.viewmodel
 
         private bool CanFire() => IsConnected && IsTorpedoOnline && IsDoorOpen;
 
+        // Shows the in-panel overlay; actual firing is in ConfirmFire
         [RelayCommand(CanExecute = nameof(CanFire))]
-        public async Task Fire()
+        public void Fire() => IsFireConfirmVisible = true;
+
+        [RelayCommand]
+        public async Task ConfirmFire()
         {
-            var result = MessageBox.Show(
-                "어뢰를 발사하시겠습니까?\n\n이 명령은 즉시 실행됩니다.",
-                "발사 확인",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning,
-                MessageBoxResult.No);
-
-            if (result != MessageBoxResult.Yes)
-                return;
-
+            IsFireConfirmVisible = false;
             byte[] packet = CommandPacketBuilder.Build(NextCmdSeq(), PacketType.Fire, true);
             await TransmitBytes(packet);
-            AppendLog($"[TCP] 어뢰 발사 명령 전송");
+            AppendLog("[TCP] 어뢰 발사 명령 전송");
+            IsTorpedoFired = true;
+            TerminalGuidanceCommand.NotifyCanExecuteChanged();
             StartTargetMovement();
         }
 
         [RelayCommand]
-        public async Task TerminalGuidance()
+        public void CancelFireConfirm() => IsFireConfirmVisible = false;
+
+        private bool CanTerminalGuidance() => IsTorpedoFired;
+
+        // Shows the in-panel overlay; actual command is in ConfirmTerminalGuidance
+        [RelayCommand(CanExecute = nameof(CanTerminalGuidance))]
+        public void TerminalGuidance() => IsTerminalGuidanceConfirmVisible = true;
+
+        [RelayCommand]
+        public async Task ConfirmTerminalGuidance()
         {
-            var result = MessageBox.Show(
-                "종말 유도 명령을 전송하시겠습니까?\n\n이 명령은 즉시 실행됩니다.",
-                "종말 유도 확인",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning,
-                MessageBoxResult.No);
-
-            if (result != MessageBoxResult.Yes)
-                return;
-
+            IsTerminalGuidanceConfirmVisible = false;
             byte[] packet = CommandPacketBuilder.Build(NextCmdSeq(), PacketType.TerminalGuidance, true);
             await TransmitBytes(packet);
             AppendLog("[TCP] 종말 유도 명령 전송");
         }
+
+        [RelayCommand]
+        public void CancelTerminalGuidanceConfirm() => IsTerminalGuidanceConfirmVisible = false;
     }
 }

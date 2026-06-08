@@ -2,25 +2,70 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Border Style="{StaticResource PanelBorder}" Padding="0,4,0,8" BorderBrush="#3a1010">
-        <StackPanel>
-            <TextBlock Text="▸ 종말 유도" Style="{StaticResource SectionTitle}" Foreground="#ff8888"/>
+        <Border.Resources>
+            <BooleanToVisibilityConverter x:Key="BoolVis"/>
+        </Border.Resources>
+        <Grid>
+            <!-- Original panel content -->
+            <StackPanel>
+                <TextBlock Text="▸ 종말 유도" Style="{StaticResource SectionTitle}" Foreground="#ff8888"/>
 
-            <Grid Margin="8,2,8,6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="거리" Style="{StaticResource FieldLabel}"/>
-                <TextBlock Grid.Column="1"
-                           Text="{Binding DistanceToTarget, StringFormat='{}{0:F2} m'}"
-                           Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
-                           VerticalAlignment="Center"/>
-            </Grid>
+                <Grid Margin="8,2,8,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="거리" Style="{StaticResource FieldLabel}"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding DistanceToTarget, StringFormat='{}{0:F2} m'}"
+                               Foreground="#44aaff" FontFamily="Consolas" FontSize="10"
+                               VerticalAlignment="Center"/>
+                </Grid>
 
-            <Button Content="종말  유도"
-                    Margin="8,0,8,0" Height="48" HorizontalAlignment="Stretch"
-                    Command="{Binding TerminalGuidanceCommand}"
-                    Style="{StaticResource FireButton}"/>
-        </StackPanel>
+                <Button Content="종말  유도"
+                        Margin="8,0,8,0" Height="48" HorizontalAlignment="Stretch"
+                        Command="{Binding TerminalGuidanceCommand}"
+                        Style="{StaticResource FireButton}"/>
+            </StackPanel>
+
+            <!-- Confirmation overlay (covers the entire panel) -->
+            <Border Background="#E8131f2e"
+                    CornerRadius="3"
+                    Visibility="{Binding IsTerminalGuidanceConfirmVisible, Converter={StaticResource BoolVis}}">
+                <StackPanel VerticalAlignment="Center" Margin="12,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="⚠" Foreground="#ffaa00" FontSize="14"
+                                   VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="종말 유도 확인"
+                                   FontFamily="Consolas" FontSize="12" FontWeight="Bold"
+                                   Foreground="#ff8888" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="종말 유도 명령을 전송하시겠습니까?"
+                               FontFamily="Consolas" FontSize="11" Foreground="#c5c5c5"
+                               TextWrapping="Wrap" Margin="0,0,0,2"/>
+                    <TextBlock Text="이 명령은 즉시 실행됩니다."
+                               FontFamily="Consolas" FontSize="10" Foreground="#888888"
+                               Margin="0,0,0,10"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0"
+                                Content="예 (YES)"
+                                Command="{Binding ConfirmTerminalGuidanceCommand}"
+                                Style="{StaticResource ActionButton}"
+                                Background="#5a0808" Foreground="#ff8888" BorderBrush="#aa2222"
+                                FontWeight="Bold" Height="26"/>
+                        <Button Grid.Column="2"
+                                Content="취소"
+                                Command="{Binding CancelTerminalGuidanceConfirmCommand}"
+                                Style="{StaticResource ActionButton}"
+                                Height="26"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Border>
 </UserControl>

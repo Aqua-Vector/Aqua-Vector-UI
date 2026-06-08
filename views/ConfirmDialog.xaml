@@ -1,0 +1,86 @@
+<Window x:Class="AquaVectorUI.views.ConfirmDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="Manual"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        Width="300" SizeToContent="Height">
+
+    <Window.Resources>
+        <Style x:Key="DlgBtn" TargetType="Button">
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="3">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.75"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="#0d1520"
+            BorderBrush="#aa2222"
+            BorderThickness="2"
+            CornerRadius="6">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" BlurRadius="20" ShadowDepth="4" Opacity="0.8"/>
+        </Border.Effect>
+
+        <StackPanel Margin="16,14,16,14">
+
+            <!-- Title row -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <TextBlock Text="⚠" Foreground="#ffaa00" FontSize="15"
+                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock x:Name="TitleText"
+                           FontFamily="Consolas" FontSize="12" FontWeight="Bold"
+                           Foreground="#ff8888" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Message -->
+            <TextBlock x:Name="MessageText"
+                       FontFamily="Consolas" FontSize="11"
+                       Foreground="#b0c4d8" TextWrapping="Wrap" LineHeight="17"
+                       Margin="0,0,0,14"/>
+
+            <!-- Buttons -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" x:Name="YesButton"
+                        Content="예  (YES)"
+                        Background="#5a0808" Foreground="#ff8888" BorderBrush="#aa2222"
+                        Style="{StaticResource DlgBtn}"
+                        Click="YesButton_Click"/>
+                <Button Grid.Column="2" x:Name="NoButton"
+                        Content="취소  (NO)"
+                        Background="#1e3050" Foreground="#a0b8cc" BorderBrush="#2a4a70"
+                        Style="{StaticResource DlgBtn}"
+                        IsDefault="True"
+                        Click="NoButton_Click"/>
+            </Grid>
+
+        </StackPanel>
+    </Border>
+</Window>
